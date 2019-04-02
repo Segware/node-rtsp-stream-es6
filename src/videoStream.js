@@ -27,10 +27,15 @@ class VideoStream extends EventEmitter {
       streamHeader.writeUInt16BE(this.width, 4)
       streamHeader.writeUInt16BE(this.height, 6)
       socket.send(streamHeader)
-
-      socket.on('close', () => { console.log(`${this.name} disconnected !`) })
+      
+      socket.on('close', () => { 
+        console.log(`${this.name} disconnected !`)
+        if(this.server.clients.length === 0){
+          this.stop()
+        }
+      })
     })
-
+    
     this.on('camdata', (data) => {
       for (let i in this.server.clients) {
         let client = this.server.clients[i]
@@ -58,7 +63,7 @@ class VideoStream extends EventEmitter {
     let gettingInputData = false
     let gettingOutputData = false
     let inputData = []
-    let outputData = []
+    let outputData = []    
 
     this.mpeg1Muxer.on('ffmpegError', (data) => {
       data = data.toString()
@@ -86,7 +91,7 @@ class VideoStream extends EventEmitter {
     this.server.close(serverCloseCallback)
     this.server.removeAllListeners()
     this.server = undefined
-
+    
     this.mpeg1Muxer.stop()
     this.mpeg1Muxer.removeAllListeners()
     this.mpeg1Muxer = undefined

@@ -30,7 +30,7 @@ class VideoStream extends EventEmitter {
       
       socket.on('close', () => { 
         console.log(`${this.name} disconnected !`)
-        if(this.server.clients.length === 0){
+        if(this.server && this.server.clients.length === 0){
           this.stop()
         }
       })
